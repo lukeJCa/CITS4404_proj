@@ -5,6 +5,7 @@ import csv
 
 
 def DataProcessor(dataorign, foldername):
+    #firstly store all the data in a dictionary with the ticker as key and {dict[timestamp] = title} as value
     companies = {}
     folder = os.path.join(os.getcwd(), dataorign + '\\')
     for i in os.scandir(folder):
@@ -17,6 +18,7 @@ def DataProcessor(dataorign, foldername):
                 try:
                     key = datetime.strptime(j[1], '%b-%d-%y %H:%M%p')
                     time[str(key)] = j[2]
+                    # store the date for the empty date row
                     date = key.strftime('%Y-%m-%d ')
                 except:
                     key = datetime.strptime(j[1], '%H:%M%p').time()
@@ -25,7 +27,8 @@ def DataProcessor(dataorign, foldername):
         companies[i.name] = time
 
 
-
+    # this is for checking wether the folder is existed or not
+    # if not, simply create the folders and files within. 
     if os.path.exists(os.path.join(os.getcwd(), foldername)) != True:
         os.mkdir(foldername)
         for i,j in companies.items():
@@ -37,8 +40,9 @@ def DataProcessor(dataorign, foldername):
                     tem = [i,k,l]
                     data.append(tem)
                 a.writerows(data)
-
+    # if folder already existed, then just append the data into the respective existing files 
     else:
+        # check if the ticker's csv files already existed before append
             for i, j in companies.items():
                 if os.path.isfile(os.path.join(os.getcwd(), foldername +'\\' + i)):
                     with open(foldername +'\\' + i, 'a', newline='') as cp:
@@ -49,6 +53,7 @@ def DataProcessor(dataorign, foldername):
                             tem = [i,k,l]
                             data.append(tem)
                         a.writerows(data)
+        # if it is new ticker, then create a new csv file for it
                 else:
                     with open(foldername +'\\' + i, 'w+', newline='') as cp:
                         a = csv.writer(cp, delimiter=',')
