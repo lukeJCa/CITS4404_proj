@@ -65,6 +65,7 @@ def DataProcessor(dataorign, foldername):
                         a.writerows(data)
 
 if __name__ == "__main__":
+    #simple put all the data folders into dataorign argument and it would create or find respective csv file and append data in it.
     DataProcessor(dataorign = 'data1', foldername = 'data')
     DataProcessor(dataorign = '2020-10-10 10_44_54.930955', foldername = 'data')
     DataProcessor(dataorign = '2020-09-29 11_39_24.557866', foldername = 'data')
