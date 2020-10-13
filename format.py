@@ -2,7 +2,7 @@ import csv
 import os
 from datetime import datetime
 import csv
-
+from track_movements import Tracker
 
 def DataProcessor(dataorign, foldername):
     #firstly store all the data in a dictionary with the ticker as key and {dict[timestamp] = title} as value
@@ -34,10 +34,12 @@ def DataProcessor(dataorign, foldername):
         for i,j in companies.items():
             with open(foldername +'\\' + i, 'w', newline='') as cp:
                 a = csv.writer(cp, delimiter=',')
-                data = [['Company', 'timestamp', 'headline']]
+                data = [['Company', 'timestamp', 'label', 'headline']]
                 i = i[:-4]
                 for k,l in j.items():
-                    tem = [i,k,l]
+                    new_tracker = Tracker(datetime.strptime(k, '%Y-%m-%d %H:%M:%S'), i)
+                    new_tracker = new_tracker.get_price_change()
+                    tem = [i,k,new_tracker,l]
                     data.append(tem)
                 a.writerows(data)
     # if folder already existed, then just append the data into the respective existing files 
@@ -50,17 +52,21 @@ def DataProcessor(dataorign, foldername):
                         data = []
                         i = i[:-4]
                         for k,l in j.items():
-                            tem = [i,k,l]
+                            new_tracker = Tracker(datetime.strptime(k, '%Y-%m-%d %H:%M:%S'), i)
+                            new_tracker = new_tracker.get_price_change()
+                            tem = [i,k,new_tracker,l]
                             data.append(tem)
                         a.writerows(data)
         # if it is new ticker, then create a new csv file for it
                 else:
                     with open(foldername +'\\' + i, 'w+', newline='') as cp:
                         a = csv.writer(cp, delimiter=',')
-                        data = [['Company', 'timestamp', 'headline']]
+                        data = [['Company', 'timestamp', 'label', 'headline']]
                         i = i[:-4]
                         for k,l in j.items():
-                            tem = [i,k,l]
+                            new_tracker = Tracker(datetime.strptime(k, '%Y-%m-%d %H:%M:%S'), i)
+                            new_tracker = new_tracker.get_price_change()
+                            tem = [i,k,new_tracker,l]
                             data.append(tem)                       
                         a.writerows(data)
 
