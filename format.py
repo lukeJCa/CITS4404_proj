@@ -1,24 +1,66 @@
 import csv
 import os
 from datetime import datetime
+import csv
 
 
-def formatTime(fname):
-    time = {}
-    path = 'data1/' + str(fname)
-    with open(path , 'r') as csvfile:
-        data = list(csv.reader(csvfile))
-        data = data[1:]
-        for i in data:
-            try:
-                key = datetime.strptime(i[1], '%b-%d-%y %H:%M%p')
-                time[str(key)] = i[2]
-            except:
-                key = datetime.strptime(i[1], '%H:%M%p').time()
-                time[str(key)] = i[2]
-    return (time)
+def DataProcessor(dataorign, foldername):
+    companies = {}
+    folder = os.path.join(os.getcwd(), dataorign + '\\')
+    for i in os.scandir(folder):
+        time = {}
+        path = folder + i.name
+        with open(path, 'r') as csvfile:
+            data = list(csv.reader(csvfile))
+            data = data[1:]
+            for j in data:
+                try:
+                    key = datetime.strptime(j[1], '%b-%d-%y %H:%M%p')
+                    time[str(key)] = j[2]
+                    date = key.strftime('%Y-%m-%d ')
+                except:
+                    key = datetime.strptime(j[1], '%H:%M%p').time()
+                    key = date + str(key)
+                    time[str(key)] = j[2]
+        companies[i.name] = time
 
-if __name__ == '__main__':
-    a = formatTime('ABT.csv')
-    for i,j in a.items():
-        print(i + '  ' + j)
+
+
+    if os.path.exists(os.path.join(os.getcwd(), foldername)) != True:
+        os.mkdir(foldername)
+        for i,j in companies.items():
+            with open(foldername +'\\' + i, 'w', newline='') as cp:
+                a = csv.writer(cp, delimiter=',')
+                data = [['Company', 'timestamp', 'headline']]
+                i = i[:-4]
+                for k,l in j.items():
+                    tem = [i,k,l]
+                    data.append(tem)
+                a.writerows(data)
+
+    else:
+            for i, j in companies.items():
+                if os.path.isfile(os.path.join(os.getcwd(), foldername +'\\' + i)):
+                    with open(foldername +'\\' + i, 'a', newline='') as cp:
+                        a = csv.writer(cp)
+                        data = []
+                        i = i[:-4]
+                        for k,l in j.items():
+                            tem = [i,k,l]
+                            data.append(tem)
+                        a.writerows(data)
+                else:
+                    with open(foldername +'\\' + i, 'w+', newline='') as cp:
+                        a = csv.writer(cp, delimiter=',')
+                        data = [['Company', 'timestamp', 'headline']]
+                        i = i[:-4]
+                        for k,l in j.items():
+                            tem = [i,k,l]
+                            data.append(tem)                       
+                        a.writerows(data)
+
+if __name__ == "__main__":
+    DataProcessor(dataorign = 'data1', foldername = 'data')
+    DataProcessor(dataorign = '2020-10-10 10_44_54.930955', foldername = 'data')
+    DataProcessor(dataorign = '2020-09-29 11_39_24.557866', foldername = 'data')
+    DataProcessor(dataorign = '2020-08-28 11_08_11.175489', foldername = 'data')
