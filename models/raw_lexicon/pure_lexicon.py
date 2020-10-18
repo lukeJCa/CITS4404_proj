@@ -6,7 +6,12 @@ import pickle
 
 from sklearn.linear_model import SGDClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, roc_auc_score
+
+
+import seaborn as sn
+import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix
 
 
 ## The pre-made list of all our words and associated (and scaled) values
@@ -39,4 +44,10 @@ pickle.dump(clf, open("sgdmodel.h5", 'wb'))
 
 y_pred = clf.predict(X_test)
 print(accuracy_score(y_pred,y_test))
+print(f1_score(y_pred,y_test, average = 'weighted'))
+print(precision_score(y_pred,y_test, average = 'weighted'))
+print(recall_score(y_pred,y_test, average = 'weighted',zero_division=1))
 
+cf_matrix = confusion_matrix(y_test, y_pred)
+ax = sn.heatmap(cf_matrix/np.sum(cf_matrix), annot=True, fmt='.2%', cmap='Blues',xticklabels = [-1,0,1], yticklabels = [-1,0,1])
+plt.savefig("SGD_heatmap.png")

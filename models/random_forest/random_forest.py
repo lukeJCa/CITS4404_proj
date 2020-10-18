@@ -1,21 +1,26 @@
 import nltk 
 nltk.download('vader_lexicon')
 
-from textblob import TextBlob
 import csv
 import pandas as pd
 import numpy as np
 import json
 import pickle
 
+from textblob import TextBlob
 from nltk.sentiment.vader import SentimentIntensityAnalyzer 
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, roc_auc_score
 from sklearn.ensemble import RandomForestClassifier
+
+
+import seaborn as sn
+import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix
+
 
 with open("sorted_dict.json", "r") as read_file:
     lexicon = json.load(read_file)
-
 
 sentiment_df = pd.DataFrame()
 sid = SentimentIntensityAnalyzer()
@@ -54,4 +59,11 @@ clf.fit(X_train, y_train)
 
 y_pred = clf.predict(X_test)
 print(accuracy_score(y_pred,y_test))
+print(recall_score(y_pred,y_test, average = 'weighted',zero_division=1))
+print(precision_score(y_pred,y_test, average = 'weighted'))
+print(f1_score(y_pred,y_test, average = 'weighted'))
 
+
+cf_matrix = confusion_matrix(y_test, y_pred)
+ax = sn.heatmap(cf_matrix/np.sum(cf_matrix), annot=True, fmt='.2%', cmap='Blues', xticklabels = [-1,0,1], yticklabels = [-1,0,1])
+plt.savefig("RF_heatmap.png")
