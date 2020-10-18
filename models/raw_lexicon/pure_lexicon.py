@@ -37,7 +37,7 @@ with open('../../datafiles/tickers.csv', newline='') as csvfile:
 
 # Train, test and save our model, using SGD Classifier to converge to some sensible solution
 X_train, X_test, y_train, y_test = train_test_split(np.array(scores), labels, test_size=0.2, random_state=42)
-clf = SGDClassifier(class_weight='balanced')
+clf = SGDClassifier(class_weight='balanced',fit_intercept=False,max_iter=100)
 clf.fit(X_train, y_train)
 
 pickle.dump(clf, open("sgdmodel.h5", 'wb'))
